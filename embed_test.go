@@ -1,4 +1,4 @@
-package test
+package golang_embed
 
 import (
 	"embed"
@@ -43,7 +43,7 @@ func TestMultipleFiles(t *testing.T) {
 	fmt.Println(string(c))
 }
 
-//go:embed ./files/*.txt
+//go:embed files/*.txt
 var files embed.FS
 
 func TestPathMatcher(t *testing.T) {
