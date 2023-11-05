@@ -2,7 +2,6 @@ package golang_embed
 
 import (
 	"embed"
-	_ "embed"
 	"fmt"
 	"io/fs"
 	"os"
@@ -31,15 +30,39 @@ func TestByte(t *testing.T) {
 //go:embed files/b.txt
 //go:embed files/c.txt
 
-var files embed.FS
+var multiFiles embed.FS
 
 func TestMultipleFiles(t *testing.T) {
-	a, _ := files.ReadFile("files/a.txt")
+	a, _ := multiFiles.ReadFile("files/a.txt")
 	fmt.Println(string(a))
 
-	b, _ := files.ReadFile("files/b.txt")
+	b, _ := multiFiles.ReadFile("files/b.txt")
 	fmt.Println(string(b))
 
-	c, _ := files.ReadFile("files/c.txt")
+	c, _ := multiFiles.ReadFile("files/c.txt")
 	fmt.Println(string(c))
+}
+
+//go:embed files/*.txt
+var files embed.FS
+
+func TestPathMatcher(t *testing.T) {
+	dirEntries, err := files.ReadDir("files")
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, entry := range dirEntries {
+		if !entry.IsDir() {
+			fmt.Println(entry.Name())
+			content, err := os.ReadFile("files/" + entry.Name())
+
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Println("Content:", string(content))
+		}
+	}
 }
